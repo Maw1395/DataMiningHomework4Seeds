@@ -27,8 +27,10 @@ def ClosestSet(closestdistance, distancearray, SeedsDF):
 			minval=min(distancearray[i][j], minval)
 		for i in range(len(distancearray)):
 			if (minval==distancearray[i][j]):
+				i, j, len(distancearray[0])
 				closestdistance[i].append(pd.DataFrame(np.array(pd.Series(SeedsDF.iloc[j])).reshape(-1,7)))
 	return closestdistance
+
 def SSECalc(closestdistance1):
 	SSEFinal=[]
 	for i in closestdistance1:
@@ -60,8 +62,6 @@ def KMeanCalc(closestdistance1):
 			#print addition
 			MeanFinal[counter].append(addition/len(i))
 		counter+=1
-	for i in MeanFinal:
-		print i
 	return MeanFinal
 
 
@@ -106,21 +106,19 @@ def SSE(Centroids):
 		counter=0
 		for i in range(0,100):
 			prev = SSE
-			distancearray=distancearray1
+			distancearray=[]
+			while len(distancearray)<Centroids:
+				distancearray.append([])
 			for j in range(len(meanarray)):
 				for k in range(len(SeedsDF)):
-					compare = pd.DataFrame(np.array(pd.Series(SeedsDF.iloc[j])).reshape(-1,7))
-					compare = compare.sub(randarray[i])
+					compare = pd.DataFrame(np.array(pd.Series(SeedsDF.iloc[k])).reshape(-1,7))
+					compare = compare.sub(meanarray[j])
 					compare= abs(compare.sum(axis=1)[0])
 					compare=math.sqrt( compare )
 					distancearray[j].append(compare)
 			print meanarray
-			print randarray
-			print distancearray
-			exit(1)
 			#print distancearray
 			closestdistance1 = ClosestSet(closestdistance, distancearray, SeedsDF)
-			print closestdistance1
 			meanDistance = KMeanCalc(closestdistance1)
 			meanarray=[]
 			for i in meanDistance:
@@ -131,7 +129,11 @@ def SSE(Centroids):
 				#print meanDistance
 				#print SSE
 				print prev, SSE
+				return SSE
 				#prev=meanDistance
+
+
+
 			'''
 			#print meanDistance
 			for j in range(len(distancearray)):
@@ -178,10 +180,7 @@ def main():
 	centroids=[3,5,7]
 	for i in centroids:
 		average=SSE(i)
-		final=0
-		for j in average:
-			final+=j
-		print "Number of K-Centroids", i,  "Average SSE:", final 
+		print "Number of K-Centroids", i,  "Average SSE:", average
 
 				
 if __name__=="__main__":
